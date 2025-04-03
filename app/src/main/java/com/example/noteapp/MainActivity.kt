@@ -329,7 +329,7 @@ fun ItemView(item: DBNotesModel, Dao: Dao_notes, navcontroller: NavHostControlle
             ClickableText(
                 modifier = Modifier
 
-                    .padding(top = 15.dp, end = 15.dp),
+                    .padding(top = 16.dp, end = 15.dp),
                 text = AnnotatedString(item.title)
             ) {
                 itemId = item.id
@@ -377,7 +377,7 @@ fun ItemViewTrash(item: DBNotesModel, Dao: Dao_notes, navcontroller: NavHostCont
                     Icon(
                         imageVector = Icons.Default.Refresh,
                         contentDescription = null,
-                        Modifier.size(20.dp)
+                        Modifier.size(19.dp)
                     )
                 }
                 Button(onClick = {
@@ -388,14 +388,14 @@ fun ItemViewTrash(item: DBNotesModel, Dao: Dao_notes, navcontroller: NavHostCont
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = null,
-                        Modifier.size(20.dp)
+                        Modifier.size(19.dp)
 
                     )
                 }
             }
             Text(
                 text = item.title,
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(17.dp),
                 style = MaterialTheme.typography.titleMedium
             )
         }
@@ -485,6 +485,9 @@ fun DateDisplay(): String {
         Text(text = formattedDate)
     }
     return formattedDate
+}
+fun moreinfo(){
+
 }
 
 
