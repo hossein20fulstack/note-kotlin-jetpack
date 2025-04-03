@@ -289,7 +289,7 @@ fun ItemList(items: List<DBNotesModel>, Dao: Dao_notes, navcontroller: NavHostCo
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 100.dp, bottom = 50.dp),
+            .padding(top = 99.dp, bottom = 49.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
 
     ) {
