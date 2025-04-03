@@ -407,7 +407,7 @@ fun ItemViewTrash(item: DBNotesModel, Dao: Dao_notes, navcontroller: NavHostCont
 fun BackApp() {
     Column(
         modifier = Modifier
-            .background(color = BackgroundColorLight)
+            .background(Color.Black)
             .fillMaxSize()
     ) {}
 }
