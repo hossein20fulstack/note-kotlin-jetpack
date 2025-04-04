@@ -93,9 +93,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-var itemId = 10
-
-
+var itemId = 0
 @Composable
 fun Screen1_Main(navcontroller: NavHostController, Dao: Dao_notes) {
     BackApp()
