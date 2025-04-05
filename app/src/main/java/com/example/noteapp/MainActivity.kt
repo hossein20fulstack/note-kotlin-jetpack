@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -27,18 +28,15 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
-import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,29 +47,33 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.compose.ui.unit.sp
+import androidx.core.app.NotificationCompat.Style
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.noteapp.ui.theme.BackgroundColorLight
 import com.example.noteapp.ui.theme.BlueLight
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 import androidx.compose.runtime.remember as remember1
+import androidx.compose.runtime.remember as remember2
+
 
 class MainActivity : ComponentActivity() {
     val db = DBHelper(this)
     val Dao = Dao_notes(db)
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-             var cont= LocalContext.current
+            var cont = LocalContext.current
             val navcontroller = rememberNavController()
             NavHost(navController = navcontroller, startDestination = "Screen1") {
                 composable("Screen1") {
@@ -94,13 +96,18 @@ class MainActivity : ComponentActivity() {
 }
 
 var itemId = 0
+
+
 @Composable
 fun Screen1_Main(navcontroller: NavHostController, Dao: Dao_notes) {
     BackApp()
     DateDisplay()
     BtnDeleteADD(navcontroller)
-    ItemList(Dao.findNotes(DBHelper.NOTE_0_STATE), Dao, navcontroller)
-
+    var listtemp = remember {
+        mutableListOf<DBNotesModel>()
+    }
+    listtemp = Dao.findNotes(DBHelper.NOTE_0_STATE)
+    ItemList(listtemp, Dao, navcontroller)
 
 }
 
@@ -137,10 +144,10 @@ fun ShowNotePage(
 ) {
     val showsNotes = daoNotes.findByid(itemId)
 
-    var itemTitle by remember1 {
+    var itemTitle by remember2 {
         mutableStateOf("${showsNotes.title}")
     }
-    var itemDetaill by remember1 {
+    var itemDetaill by remember2 {
         mutableStateOf("${showsNotes.detail}")
     }
     val rrr = DBNotesModel(itemId, itemTitle, itemDetaill, DBHelper.NOTE_0_STATE, date)
@@ -157,20 +164,48 @@ fun ShowNotePage(
             verticalArrangement = Arrangement.Center
         ) {
 
-            TextField(modifier = Modifier
-                .padding(start = 10.dp, end = 10.dp, top = 20.dp)
-                .fillMaxWidth(),
+            TextField(
+                modifier = Modifier
+                    .padding(start = 10.dp, end = 10.dp, top = 10.dp)
+                    .fillMaxWidth(),
+                maxLines = 2,
+
                 value = itemTitle,
                 onValueChange = { itemTitle = it },
-                label = { Text("عنوان یادداشت") })
+                label = {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End
+                    ) {
+                        Text(text = "عنوان")
+                    }
+                },
+                textStyle = LocalTextStyle.current.copy(
+                    textDirection = TextDirection.Rtl,
+                    fontSize = 22.sp
+                )
+            )
+
             Spacer(modifier = Modifier.height(20.dp))
-            TextField(modifier = Modifier
-                .fillMaxWidth()
-                .height(400.dp)
-                .padding(start = 10.dp, end = 8.dp),
+            TextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(400.dp)
+                    .padding(start = 10.dp, end = 8.dp),
+                maxLines = 20,
                 value = itemDetaill,
                 onValueChange = { itemDetaill = it },
-                label = { Text("متن یادداشت") })
+                label = {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End
+                    ) {
+                        Text(text = "متن")
+                    }
+                },
+                textStyle = LocalTextStyle.current.copy(
+                    textDirection = TextDirection.Rtl,
+                    fontSize = 22.sp
+                )
+            )
             Spacer(modifier = Modifier.height(15.dp))
         }
 
@@ -209,10 +244,10 @@ fun BtnUpdate(navcontroller: NavHostController, Dbnote: DBNotesModel, daoNotes: 
 @Composable
 fun AddNotesPage(navcontroller: NavHostController, daoNotes: Dao_notes, date: String) {
 
-    var title by remember1 {
+    var title by remember2 {
         mutableStateOf("")
     }
-    var detail by remember1 {
+    var detail by remember2 {
         mutableStateOf("")
     }
 
@@ -253,33 +288,53 @@ fun AddNotesPage(navcontroller: NavHostController, daoNotes: Dao_notes, date: St
                 )
         }
     }
-
     Column(
         modifier = Modifier.padding(top = 35.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-
-        TextField(modifier = Modifier
-            .padding(start = 10.dp, end = 10.dp, top = 70.dp)
-            .fillMaxWidth(),
+        TextField(
+            modifier = Modifier
+                .padding(start = 10.dp, end = 10.dp, top = 70.dp)
+                .fillMaxWidth(),
             maxLines = 2,
             value = title,
             onValueChange = { title = it },
-            label = { Text("عنوان یادداشت") })
+            label = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End
+                ) {
+                    Text(text = "عنوان")
+                }
+            },
+            textStyle = LocalTextStyle.current.copy(
+                textDirection = TextDirection.Rtl,
+                fontSize = 22.sp
+            )
+        )
         Spacer(modifier = Modifier.height(20.dp))
-        TextField(modifier = Modifier
-            .fillMaxWidth()
-            .height(400.dp)
-            .padding(start = 10.dp, end = 8.dp), maxLines = 15,
+        TextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(400.dp)
+                .padding(start = 10.dp, end = 8.dp),
+            maxLines = 15,
             value = detail,
             onValueChange = { detail = it },
-            label = { Text("متن یادداشت") })
+            label = {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(), horizontalArrangement = Arrangement.End
+                ) { Text(text = "متن") }
+            },
+            textStyle = LocalTextStyle.current.copy(
+                textDirection = TextDirection.Rtl,
+                fontSize = 17.sp
+            )
+        )
         Spacer(modifier = Modifier.height(15.dp))
-
     }
 }
-
 
 @Composable
 fun ItemList(items: List<DBNotesModel>, Dao: Dao_notes, navcontroller: NavHostController) {
@@ -289,18 +344,17 @@ fun ItemList(items: List<DBNotesModel>, Dao: Dao_notes, navcontroller: NavHostCo
             .fillMaxSize()
             .padding(top = 99.dp, bottom = 49.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
-
     ) {
         items(items) { item ->
             ItemView(item, Dao, navcontroller)
-
         }
     }
 }
 
 @Composable
 fun ItemView(item: DBNotesModel, Dao: Dao_notes, navcontroller: NavHostController) {
-        
+
+
     Card(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -312,9 +366,10 @@ fun ItemView(item: DBNotesModel, Dao: Dao_notes, navcontroller: NavHostControlle
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(onClick = {
+
                     Dao.SetDeleteState(item, item.id.toString())
                     navcontroller.navigate("Screen1")
-                    
+
                 }) {
                     Icon(
                         imageVector = Icons.Default.Clear,
@@ -484,8 +539,4 @@ fun DateDisplay(): String {
     }
     return formattedDate
 }
-fun moreinfo(){
-
-}
-
 

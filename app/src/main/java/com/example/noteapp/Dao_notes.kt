@@ -72,7 +72,7 @@ class Dao_notes(
 
     }
 
-    fun updateNotes(dataa:DBNotesModel,idd:Int) {
+    fun updateNotes(dataa: DBNotesModel, idd: Int) {
         val database = db.writableDatabase
         setContenetValues(dataa)
         database.update(
